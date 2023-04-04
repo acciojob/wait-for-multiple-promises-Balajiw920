@@ -1,45 +1,31 @@
-//your JS code here. If required.
-const table = document.querySelector('table tbody');
+const promises = [
+    new Promise(resolve => setTimeout(() => resolve(Math.random() * 2 + 1), Math.random() * 2000 + 1000)),
+    new Promise(resolve => setTimeout(() => resolve(Math.random() * 2 + 1), Math.random() * 2000 + 1000)),
+    new Promise(resolve => setTimeout(() => resolve(Math.random() * 2 + 1), Math.random() * 2000 + 1000))
+  ];
 
-const promise1 = new Promise((resolve) => {
-  const time = Math.random() * 2000 + 1000;
-  setTimeout(() => resolve(time), time);
-});
+  Promise.all(promises)
+    .then(results => {
+      const loadingRow = document.getElementById("loading");
+      loadingRow.parentNode.removeChild(loadingRow);
 
-const promise2 = new Promise((resolve) => {
-  const time = Math.random() * 2000 + 1000;
-  setTimeout(() => resolve(time), time);
-});
+      const table = document.querySelector("table");
+      let total = 0;
 
-const promise3 = new Promise((resolve) => {
-  const time = Math.random() * 2000 + 1000;
-  setTimeout(() => resolve(time), time);
-});
+      results.forEach((result, index) => {
+        const promiseNum = index + 1;
+        const timeTaken = result.toFixed(3);
+        total += result;
+        const row = table.insertRow();
+        const promiseCell = row.insertCell(0);
+        const timeTakenCell = row.insertCell(1);
+        promiseCell.textContent = `Promise ${promiseNum}`;
+        timeTakenCell.textContent = timeTaken;
+      });
 
-Promise.all([promise1, promise2, promise3])
-  .then((times) => {
-    const total = times.reduce((acc, curr) => acc + curr, 0);
-    const totalSeconds = total / 1000;
-
-    table.innerHTML = `
-      <tr>
-        <td>Promise 1</td>
-        <td>${(times[0] / 1000).toFixed(3)}</td>
-      </tr>
-      <tr>
-        <td>Promise 2</td>
-        <td>${(times[1] / 1000).toFixed(3)}</td>
-      </tr>
-      <tr>
-        <td>Promise 3</td>
-        <td>${(times[2] / 1000).toFixed(3)}</td>
-      </tr>
-      <tr>
-        <td>Total</td>
-        <td>${totalSeconds.toFixed(3)}</td>
-      </tr>
-    `;
-  })
-  .catch((error) => {
-    console.error(error);
-  });
+      const totalRow = table.insertRow();
+      const totalCell = totalRow.insertCell(0);
+      const totalTimeCell = totalRow.insertCell(1);
+      totalCell.textContent = "Total";
+      totalTimeCell.textContent = total.toFixed(3);
+    });
